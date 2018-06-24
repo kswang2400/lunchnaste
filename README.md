@@ -12,6 +12,11 @@ READ: make network call to pinchefs site or use static test html
 debug: prints debug to stdout
 channel: sends to slack channel
 
+### tests
+
+'python3 -m pytest'
+`env pytest`
+
 - [x] parse menu data from pincuisine blog
 - [ ] set up voting bot to figure out which building to crew up
 - [ ] support sending to multiple channels/users
