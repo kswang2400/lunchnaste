@@ -7,8 +7,17 @@ from urllib.request import urlopen
 from menu_html_parser import MenuHTMLParser
 
 CHANNEL_CHOICES = {
+    # seo-young
+    'chidinma': 'D7A466R62',
     'kwang': 'D751KUUUA',
     'seo-young': 'G5BT1KEP8',
+
+    # klayy-lmao
+    'eric-huang': 'D8R13MBMM',
+    'eric-pham': 'DAXNA4Q5B',
+    'evan': 'D3B1Q1YNT',
+    'kevin': 'D39KFCW7J',
+    'ollie': 'D3A8V5K3M',
 }
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
 SLACK_NO_CHANNEL = 'none'
