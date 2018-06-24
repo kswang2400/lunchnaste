@@ -20,7 +20,7 @@ def menu_item_has_gluten(text):
 
     return 'G' in text.split('(')[1].split(')')[0]
 
-class MenuTextParser(HTMLParser):
+class MenuHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.output = ''
