@@ -1,34 +1,24 @@
 import datetime
 from html.parser import HTMLParser
 
-CITIES = ('SF', 'CHI', 'NYC', 'SEA',)
-MEALS = ('Breakfast', 'Lunch', 'Dinner', 'Back 2 Basics', 'Happy Hour',)
+from menu_data_helpers import (
+    MEALS,
+    is_empty,
+    is_gluten_free,
+    menu_section_name,
+    fix_format_error,
+    parse_city_metadata,
+    parse_meal_metadata,
+)
+
 GET_DATE_FLAG = '~get date~'
 DATE_FORMAT = '%m/%d/%Y'
-
-def empty_data(data):
-    return ''.join(data.split()) == '' or data == '\u200b'
-
-def is_menu_header(data):
-    for meal in (*MEALS, *CITIES):
-        if data.startswith(meal):
-            return True
-    return False
-
-def menu_item_has_gluten(text):
-    if '(' not in text:
-        return False
-
-    return 'G' in text.split('(')[1].split(')')[0]
 
 class MenuHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.output = ''
         self.menu_section = 0
-
-        # KW: v2 iteration stores parsed data for analysis
-        # requires parsing HTML in order though
         self.data = {}
         self.date = False
         self.building = None
@@ -36,78 +26,14 @@ class MenuHTMLParser(HTMLParser):
         self.theme = None
 
         # KW: menu is inconsistent between SF and non-SF offices
+        self.format_error_flag = False
+
         # <font>Lunch 11:45am - 1:30 pm - Vietnamese</font>
-        #
-        # vs
-        #
+
         # <font>
         #     Lunch-&nbsp;
         #     <span>11:45 am - 1:30 pm - DIY Pho Noodle Bar&nbsp;</span>
         # </font>
-        self.edge_flag_1 = False
-
-    def parse_and_set_metadata(self, data):
-        if empty_data(data):
-            return False
-
-        for city in CITIES:
-            if data.startswith(city):
-                self.building = '{city}-{address}'.format(
-                    city=data[:len(city)],
-                    address=data[len(city):].zfill(5))
-                return False
-
-        for meal in MEALS:
-            if data.startswith(meal):
-                self.meal = meal.strip()
-                self.theme = data.split('-')[-1].strip()
-
-                if self.theme == '\xa0':
-                    self.edge_flag_1 = True
-                    self.theme = None
-                return False
-
-        if self.edge_flag_1:
-            print(data.split('-'))
-            self.theme = data.split('-')[-1].strip()
-            self.edge_flag_1 = False
-            return False
-
-        return not is_menu_header(data)
-
-    def collect_data(self, data):
-        self.collect_metadata(data)
-
-        warning = ':warning: ' if menu_item_has_gluten(data) else ''
-        spacing = '\n' if is_menu_header(data) else '\t'
-
-        self.output += '{spacing}{warning}{data}\n'.format(
-            spacing=spacing,
-            warning=warning,
-            data=data)
-
-        return
-
-    def collect_metadata(self, data):
-        is_menu_item = self.parse_and_set_metadata(data)
-
-        if is_menu_item:
-            menu_item_data = {
-                'text': data,
-                'building': self.building,
-                'meal': self.meal,
-                'theme': self.theme,
-                'has_gluten': menu_item_has_gluten(data),
-                'data': self.date,
-            }
-
-            key = (self.date.strftime(DATE_FORMAT), self.building, self.meal)
-            if key in self.data:
-                self.data[key].append(menu_item_data)
-            else:
-                self.data[key] = [menu_item_data]
-
-        return
 
     def handle_starttag(self, tag, attrs):
         for attr in attrs:
@@ -119,7 +45,7 @@ class MenuHTMLParser(HTMLParser):
         return
 
     def handle_data(self, data):
-        if empty_data(data):
+        if is_empty(data):
             return
 
         if self.date == GET_DATE_FLAG:
@@ -127,10 +53,87 @@ class MenuHTMLParser(HTMLParser):
             return
 
         if self.menu_section == 1:
-            self.collect_data(data)
+            self._collect_data(data)
 
         return
 
     def feed(self, data):
         super().feed(data)
         return (self.data, self.output)
+
+    def _append_to_output_string(self, data):
+        warning = '' if is_gluten_free(data) else ':warning: '
+        spacing = {
+            'city': '\n',
+            'meals': '\t',
+            'menu_item': '\t\t',
+        }[menu_section_name(data)]
+
+        self.output += '{spacing}{warning}{data}\n'.format(
+            spacing=spacing,
+            warning=warning,
+            data=data)
+
+        return
+
+    def _build_menu_metadata_key(self):
+        key = (self.date.strftime(DATE_FORMAT), self.building, self.meal)
+        if key not in self.data:
+            self.data[key] = []
+
+        return key
+
+    def _collect_data(self, data):
+        self._collect_metadata(data)
+        self._append_to_output_string(data)
+
+        return
+
+    def _collect_metadata(self, data):
+        is_header = self._parse_and_set_header_metadata(data)
+
+        if not is_header:
+            menu_item_data = self._format_menu_item_data(data)
+            self._store_menu_item_data(menu_item_data)
+
+        return
+
+    def _format_menu_item_data(self, data):
+        return {
+            'text': data,
+            'building': self.building,
+            'meal': self.meal,
+            'theme': self.theme,
+            'is_gluten_free': is_gluten_free(data),
+            'data': self.date,
+        }
+
+    def _parse_and_set_header_metadata(self, data):
+        if self.format_error_flag:
+            self.theme = fix_format_error(data)
+            self.format_error_flag = False
+            return True
+
+        if is_empty(data):
+            return True
+
+        city_metadata = parse_city_metadata(data)
+        if city_metadata:
+            self.building = city_metadata
+            return True
+
+        meal_metadata = parse_meal_metadata(data)
+        if meal_metadata:
+            self.meal, self.theme = meal_metadata
+            if self.theme in ['\xa0', '']:
+                self.format_error_flag = True
+                self.theme = None
+            return True
+
+        return False
+
+    def _store_menu_item_data(self, menu_item_data):
+        key = self._build_menu_metadata_key()
+        self.data[key].append(menu_item_data)
+
+        return

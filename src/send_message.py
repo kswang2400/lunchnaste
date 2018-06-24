@@ -31,6 +31,32 @@ def get_raw_html():
     else:
         return open('static/menu_page.html', 'r').read()
 
+def send_to_slack(message, channel):
+    sc = SlackClient(SLACK_TOKEN)
+    sc.api_call(
+        "chat.postMessage",
+        channel=channel,
+        text=message,
+    )
+
+def setup_script_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-d',
+        '--debug',
+        type=string_boolean,
+        default='no',
+        help='debug flag to print messages to stdout')
+    parser.add_argument(
+        '-c',
+        '--channel',
+        type=str,
+        default=SLACK_NO_CHANNEL,
+        choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
+        help='slack message ids where you want to send the message')
+    
+    return parser.parse_args()
+
 def string_boolean(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -39,25 +65,12 @@ def string_boolean(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-d',
-        '--debug',
-        type=string_boolean,
-        default='yes',
-        help='slack message ids where you want to send the message')
-    parser.add_argument(
-        '-c',
-        '--channel',
-        type=str,
-        default=SLACK_NO_CHANNEL,
-        choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
-        help='slack message ids where you want to send the message')
-    args = parser.parse_args()
+def main():
+    args = setup_script_args()
 
     parser = MenuHTMLParser()
     raw_html = get_raw_html()
+
     metadata, message = parser.feed(raw_html)
 
     if args.debug:
@@ -65,9 +78,7 @@ if __name__ == '__main__':
         print(message)
 
     if SLACK_TOKEN and args.channel in CHANNEL_CHOICES.keys():
-        sc = SlackClient(SLACK_TOKEN)
-        sc.api_call(
-            "chat.postMessage",
-            channel=CHANNEL_CHOICES[args.channel],
-            text=message,
-        )
+        send_to_slack(message, CHANNEL_CHOICES[args.channel])
+
+if __name__ == '__main__':
+    main()
