@@ -14,8 +14,9 @@ source env.sh
 
 ### tests
 
-- `python3 -m pytest`
-- `env pytest`
+- `PYTHONPATH=. py.test`
+
+### roadmap
 
 - [x] parse menu data from pincuisine blog
 - [ ] set up voting bot to figure out which building to crew up
