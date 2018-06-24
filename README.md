@@ -14,7 +14,7 @@ source env.sh
 
 ### tests
 
-- `PYTHONPATH=. py.test`
+- `PYTHONPATH=. pytest`
 
 ### roadmap
 

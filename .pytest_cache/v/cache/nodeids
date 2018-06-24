@@ -1,4 +1,0 @@
-[
-  "src/tests/test_html_parser.py::TestMenuHTMLParser::test_feed_metadata",
-  "src/tests/test_html_parser.py::TestMenuHTMLParser::test_format_error_case_covered"
-]

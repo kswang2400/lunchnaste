@@ -2,4 +2,4 @@ env.sh
 *.pyc
 
 __pycache__
-*/.pytest_cache/*
+.pytest_cache/*

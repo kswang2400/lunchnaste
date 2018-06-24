@@ -54,7 +54,7 @@ def setup_script_args():
         default=SLACK_NO_CHANNEL,
         choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
         help='slack message ids where you want to send the message')
-    
+
     return parser.parse_args()
 
 def string_boolean(v):
