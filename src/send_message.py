@@ -4,49 +4,61 @@ import pprint
 from slackclient import SlackClient
 from urllib.request import urlopen
 
-from menu_html_parser import MenuTextParser
+from menu_html_parser import MenuHTMLParser
 
-SLACK_NO_CHANNEL = 'none'
-CHANNEL_CHOICES = [SLACK_NO_CHANNEL, 'all', 'kwang', 'seo-young']
-KWANG_SLACK_ID = 'D751KUUUA'
+CHANNEL_CHOICES = {
+    'kwang': 'D751KUUUA',
+    'seo-young': 'G5BT1KEP8',
+}
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
-SEO_YOUNG_SLACK_ID = 'G5BT1KEP8'
-SLACK_TOKEN= os.environ["SLACK_API_TOKEN"]
+SLACK_NO_CHANNEL = 'none'
+SLACK_TOKEN= os.environ.get("SLACK_API_TOKEN", None)
 
 pp = pprint.PrettyPrinter(indent=4, compact=True)
 
-def create_message():
-    # raw_html = urlopen(PIN_CHEFS_URL).read().decode("utf-8")
+def get_raw_html():
+    if os.environ.get('READ', False) == 'true':
+        return urlopen(PIN_CHEFS_URL).read().decode("utf-8")
+    else:
+        return open('static/menu_page.html', 'r').read()
 
-    raw_html = open('static/menu_page.html', 'r').read()
-
-    parser = MenuTextParser()
-    output = parser.feed(raw_html)
-
-    return output
+def string_boolean(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-
+    parser.add_argument(
+        '-d',
+        '--debug',
+        type=string_boolean,
+        default='yes',
+        help='slack message ids where you want to send the message')
     parser.add_argument(
         '-c',
         '--channel',
         type=str,
         default=SLACK_NO_CHANNEL,
-        choices=CHANNEL_CHOICES,
+        choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
         help='slack message ids where you want to send the message')
-
     args = parser.parse_args()
 
-    metadata, message = create_message()
+    parser = MenuHTMLParser()
+    raw_html = get_raw_html()
+    metadata, message = parser.feed(raw_html)
 
-    pp.pprint(metadata)
-    print(message)
+    if args.debug:
+        pp.pprint(metadata)
+        print(message)
 
-    if args.channel is not SLACK_NO_CHANNEL:
+    if SLACK_TOKEN and args.channel in CHANNEL_CHOICES.keys():
         sc = SlackClient(SLACK_TOKEN)
         sc.api_call(
             "chat.postMessage",
-            channel=KWANG_SLACK_ID,
+            channel=CHANNEL_CHOICES[args.channel],
             text=message,
         )
