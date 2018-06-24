@@ -1,6 +1,7 @@
 import datetime
 from html.parser import HTMLParser
 
+CITIES = ('SF', 'CHI', 'NYC', 'SEA',)
 MEALS = ('Breakfast', 'Lunch', 'Dinner', 'Back 2 Basics', 'Happy Hour',)
 GET_DATE_FLAG = '~get date~'
 DATE_FORMAT = '%m/%d/%Y'
@@ -9,7 +10,7 @@ def empty_data(data):
     return ''.join(data.split()) == '' or data == '\u200b'
 
 def is_menu_header(data):
-    for meal in (*MEALS, 'SF'):
+    for meal in (*MEALS, *CITIES):
         if data.startswith(meal):
             return True
     return False
@@ -34,21 +35,43 @@ class MenuHTMLParser(HTMLParser):
         self.meal = None
         self.theme = None
 
+        # KW: menu is inconsistent between SF and non-SF offices
+        # <font>Lunch 11:45am - 1:30 pm - Vietnamese</font>
+        #
+        # vs
+        #
+        # <font>
+        #     Lunch-&nbsp;
+        #     <span>11:45 am - 1:30 pm - DIY Pho Noodle Bar&nbsp;</span>
+        # </font>
+        self.edge_flag_1 = False
+
     def parse_and_set_metadata(self, data):
         if empty_data(data):
             return False
 
-        if data.startswith('SF'):
-            self.building = '{city}-{address}'.format(
-                city=data[:2],
-                address=data[2:])
-            return
+        for city in CITIES:
+            if data.startswith(city):
+                self.building = '{city}-{address}'.format(
+                    city=data[:len(city)],
+                    address=data[len(city):].zfill(5))
+                return False
 
         for meal in MEALS:
             if data.startswith(meal):
-                self.meal = meal
-                self.theme = data.split(' - ')[-1]
-                return
+                self.meal = meal.strip()
+                self.theme = data.split('-')[-1].strip()
+
+                if self.theme == '\xa0':
+                    self.edge_flag_1 = True
+                    self.theme = None
+                return False
+
+        if self.edge_flag_1:
+            print(data.split('-'))
+            self.theme = data.split('-')[-1].strip()
+            self.edge_flag_1 = False
+            return False
 
         return not is_menu_header(data)
 
@@ -102,9 +125,6 @@ class MenuHTMLParser(HTMLParser):
         if self.date == GET_DATE_FLAG:
             self.date = datetime.datetime.strptime(data.strip(), DATE_FORMAT)
             return
-
-        if data == 'CHI':
-            self.menu_section += 1
 
         if self.menu_section == 1:
             self.collect_data(data)

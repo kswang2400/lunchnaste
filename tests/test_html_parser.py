@@ -10,14 +10,17 @@ class TestMenuHTMLParser(unittest.TestCase):
 
     def test_feed(self):
         metadata, message = self.parser.feed(self.raw_html)
-        first_breakfast_item = metadata[('06/22/2018', 'SF-651', 'Breakfast')][0]
+        first_breakfast_item = metadata[('06/22/2018', 'SF-00651', 'Breakfast')][0]
 
         self.assertEqual(list(metadata.keys()), list([
-            ('06/22/2018', 'SF-651', 'Breakfast'),
-            ('06/22/2018', 'SF-651', 'Lunch'),
-            ('06/22/2018', 'SF-651', 'Back 2 Basics'),
-            ('06/22/2018', 'SF-651', 'Happy Hour'),
-            ('06/22/2018', 'SF-505', 'Lunch')
+            ('06/22/2018', 'SF-00651', 'Breakfast'),
+            ('06/22/2018', 'SF-00651', 'Lunch'),
+            ('06/22/2018', 'SF-00651', 'Back 2 Basics'),
+            ('06/22/2018', 'SF-00651', 'Happy Hour'),
+            ('06/22/2018', 'SF-00505', 'Lunch'),
+            ('06/22/2018', 'CHI-00000', 'Lunch'),
+            ('06/22/2018', 'NYC-00000', 'Lunch'),
+            ('06/22/2018', 'SEA-00000', 'Lunch'),
         ]))
         self.assertEqual(list(first_breakfast_item.keys()), [
             'text',
@@ -28,7 +31,7 @@ class TestMenuHTMLParser(unittest.TestCase):
             'data'
         ])
         self.assertEqual(first_breakfast_item['text'], 'Pan d\'ajo (G D*)')
-        self.assertEqual(first_breakfast_item['building'], 'SF-651')
+        self.assertEqual(first_breakfast_item['building'], 'SF-00651')
         self.assertEqual(first_breakfast_item['meal'], 'Breakfast')
         self.assertEqual(first_breakfast_item['theme'], 'Mexican')
         self.assertEqual(first_breakfast_item['has_gluten'], True)
