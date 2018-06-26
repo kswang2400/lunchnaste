@@ -23,7 +23,7 @@ def is_empty(data):
 
 def check_allergen_key(text):
     if '(' not in text:
-        return Allergens([False]*7)
+        return Allergens([False]*2 + [True] + [False]*4)
     allergens = [None]*7
     if text.count('*', text.find('('), text.find(')')) == 3:
         allergens[0], allergens[1] = [True, True]
