@@ -12,14 +12,14 @@ def filter_menu_during_meal(data, meal='Lunch'):
 
     return output
 
-def filter_menu_in_buildings(data, buildings=None):
-    if not buildings:
-        buildings = ['SF']
+def filter_menu_in_cities(data, cities=None):
+    if not cities:
+        cities = ['SF']
 
     output = {}
     for key in data:
-        for b in buildings:
-            if b in CITIES and b in key[1]:
+        for c in cities:
+            if c in CITIES and c in key[1]:
                 output[key] = data[key]
 
     return output

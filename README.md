@@ -5,7 +5,7 @@
 ```
 echo "export SLACK_API_TOKEN='<your-slack-api-token>'" >> env.sh
 source env.sh
-[READ=true] python src/send_message.py [--debug=false] [-c kwang]
+PYTHONPATH=. [READ=true] python src/send_message.py [--debug=false] [-s kwang]
 ```
 
 - READ: make network call to pinchefs site or use static test html
@@ -14,10 +14,10 @@ source env.sh
 
 ### setup
 
-```python
-mkvirtualenv --python=`which python3` lunchnaste
 ```
-`workon lunchnaste`
+mkvirtualenv --python=`which python3` lunchnaste
+workon lunchnaste
+```
 
 
 ### tests

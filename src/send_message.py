@@ -8,7 +8,7 @@ from menu_data_helpers import CITIES, MEALS
 from menu_html_parser import MenuHTMLParser
 from slack_message_formatter import (
     filter_menu_during_meal,
-    filter_menu_in_buildings,
+    filter_menu_in_cities,
     format_metadata_for_slack,
 )
 
@@ -57,8 +57,8 @@ def setup_script_args():
         default='no',
         help='debug flag to print messages to stdout')
     parser.add_argument(
-        '-t',
-        '--channel',
+        '-s',
+        '--send',
         type=str,
         default=SLACK_NO_CHANNEL,
         choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
@@ -68,7 +68,7 @@ def setup_script_args():
         '-c',
         '--cities',
         nargs='+',
-        default='SF',
+        default=['SF'],
         choices=CITIES,
         help='define which cities to filter your menu search')
 
@@ -98,7 +98,7 @@ def main():
 
     metadata, message = parser.feed(raw_html)
 
-    metadata = filter_menu_in_buildings(metadata, args.cities)
+    metadata = filter_menu_in_cities(metadata, args.cities)
     metadata = filter_menu_during_meal(metadata, args.meal)
     message = format_metadata_for_slack(metadata)
 
