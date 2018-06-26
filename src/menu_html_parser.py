@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 from src.menu_data_helpers import (
     MEALS,
     is_empty,
-    is_gluten_free,
+    check_allergen_key,
     menu_section_name,
     fix_format_error,
     parse_city_metadata,
@@ -13,6 +13,7 @@ from src.menu_data_helpers import (
 
 GET_DATE_FLAG = '~get date~'
 DATE_FORMAT = '%m/%d/%Y'
+
 
 class MenuHTMLParser(HTMLParser):
     def __init__(self):
@@ -62,7 +63,7 @@ class MenuHTMLParser(HTMLParser):
         return (self.data, self.output)
 
     def _append_to_output_string(self, data):
-        warning = '' if is_gluten_free(data) else ':warning: '
+        warning = '' if check_allergen_key(data).is_gluten_free else ':warning: '
         spacing = {
             'city': '\n',
             'meals': '\t',
@@ -99,12 +100,19 @@ class MenuHTMLParser(HTMLParser):
         return
 
     def _format_menu_item_data(self, data):
+        allergens = check_allergen_key(data)
         return {
             'text': data,
             'building': self.building,
             'meal': self.meal,
             'theme': self.theme,
-            'is_gluten_free': is_gluten_free(data),
+            'is_vegetarian': allergens.is_vegetarian,
+            'is_vegan': allergens.is_vegan,
+            'is_gluten_free': allergens.is_gluten_free,
+            'is_made_with_dairy': allergens.is_made_with_dairy,
+            'is_made_with_nuts': allergens.is_made_with_nuts,
+            'is_made_with_eggs': allergens.is_made_with_eggs,
+            'is_made_with_soy': allergens.is_made_with_nuts,
             'data': self.date,
         }
 

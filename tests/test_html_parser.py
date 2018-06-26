@@ -33,7 +33,13 @@ class TestMenuHTMLParser(unittest.TestCase):
             'building',
             'meal',
             'theme',
+            'is_vegetarian',
+            'is_vegan',
             'is_gluten_free',
+            'is_made_with_dairy',
+            'is_made_with_nuts',
+            'is_made_with_eggs',
+            'is_made_with_soy',
             'data'
         ])
         self.assertEqual(first_breakfast_item['text'], 'Pan d\'ajo (G D*)')
