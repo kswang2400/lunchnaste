@@ -5,6 +5,11 @@ from slackclient import SlackClient
 from urllib.request import urlopen
 
 from menu_html_parser import MenuHTMLParser
+from slack_message_formatter import (
+    filter_menu_during_meal,
+    filter_menu_in_buildings,
+    format_metadata_for_slack,
+)
 
 CHANNEL_CHOICES = {
     # seo-young
@@ -21,7 +26,7 @@ CHANNEL_CHOICES = {
 }
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
 SLACK_NO_CHANNEL = 'none'
-SLACK_TOKEN= os.environ.get("SLACK_API_TOKEN", None)
+SLACK_TOKEN = os.environ.get("SLACK_API_TOKEN", None)
 
 pp = pprint.PrettyPrinter(indent=4, compact=True)
 
@@ -73,8 +78,11 @@ def main():
 
     metadata, message = parser.feed(raw_html)
 
+    metadata = filter_menu_in_buildings(metadata, ['SF-00505', 'SF-00651'])
+    metadata = filter_menu_during_meal(metadata)
+    message = format_metadata_for_slack(metadata)
+
     if args.debug:
-        pp.pprint(metadata)
         print(message)
 
     if SLACK_TOKEN and args.channel in CHANNEL_CHOICES.keys():
