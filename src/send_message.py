@@ -4,18 +4,15 @@ import pprint
 from slackclient import SlackClient
 from urllib.request import urlopen
 
+from menu_data_helpers import CITIES, MEALS
 from menu_html_parser import MenuHTMLParser
 from slack_message_formatter import (
     filter_menu_during_meal,
     filter_menu_in_buildings,
     format_metadata_for_slack,
 )
-from menu_data_helpers import (
-    CITIES,
-    MEALS,
-)
 
-
+# KW: TODO, this is specific to my key, probably shouldn't hardcode it anyways
 CHANNEL_CHOICES = {
     # seo-young
     'chidinma': 'D7A466R62',
