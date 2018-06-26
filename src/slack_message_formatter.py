@@ -1,4 +1,8 @@
-from menu_data_helpers import MEALS, is_gluten_free
+from menu_data_helpers import (
+    CITIES,
+    MEALS,
+    is_gluten_free,
+)
 
 def filter_menu_during_meal(data, meal='Lunch'):
     output = {}
@@ -8,19 +12,14 @@ def filter_menu_during_meal(data, meal='Lunch'):
 
     return output
 
-def filter_menu_in_buildings(data, buildings):
-    VALID_BUILDINGS = [
-        'SF-00505',
-        'SF-00651',
-        'CHI-00000',
-        'NYC-00000',
-        'SEA-00000',
-    ]
+def filter_menu_in_buildings(data, buildings=None):
+    if not buildings:
+        buildings = ['SF']
 
     output = {}
     for key in data:
         for b in buildings:
-            if b in VALID_BUILDINGS and b == key[1]:
+            if b in CITIES and b in key[1]:
                 output[key] = data[key]
 
     return output
