@@ -13,7 +13,7 @@ class TestMenuHTMLParser(unittest.TestCase):
         self.test_date = datetime.datetime.strptime('06/22/2018', DATE_FORMAT)
 
     def test_feed_metadata(self):
-        metadata, message = self.parser.feed(self.raw_html)
+        metadata, _ = self.parser.feed(self.raw_html)
 
         key = ('06/22/2018', 'SF-00651', 'Breakfast')
         first_breakfast_item = metadata[key][0]
@@ -44,7 +44,7 @@ class TestMenuHTMLParser(unittest.TestCase):
         self.assertEqual(first_breakfast_item['data'], self.test_date)
 
     def test_format_error_case_covered(self):
-        metadata, message = self.parser.feed(self.raw_html)
+        metadata, _ = self.parser.feed(self.raw_html)
 
         key = ('06/22/2018', 'CHI-00000', 'Lunch')
         first_chicago_lunch_item = metadata[key][0]

@@ -12,6 +12,14 @@ source env.sh
 - debug: prints debug to stdout
 - channel: sends to slack channel
 
+### setup
+
+```python
+mkvirtualenv --python=`which python3` lunchnaste
+```
+`workon lunchnaste`
+
+
 ### tests
 
 - `PYTHONPATH=. pytest`
