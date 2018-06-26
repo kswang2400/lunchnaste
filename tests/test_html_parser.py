@@ -2,7 +2,7 @@ import unittest
 import datetime
 import pprint
 
-from src.menu_html_parser import MenuHTMLParser, DATE_FORMAT
+from menu_html_parser import MenuHTMLParser, DATE_FORMAT
 
 pp = pprint.PrettyPrinter(indent=4, compact=True)
 
