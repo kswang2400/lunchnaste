@@ -31,7 +31,7 @@ def format_metadata_for_slack(data):
     for key, value in data.items():
         output += format_building_message(key, value)
 
-    return output
+    return { 'text': output }
 
 def format_building_message(key, value):
     output = ''
@@ -52,4 +52,3 @@ def format_menu_item_message(menu_item):
         warning = '' if is_gluten_free(menu_item['text']) else ':warning: ',
         item=menu_item['text'],
     )
-

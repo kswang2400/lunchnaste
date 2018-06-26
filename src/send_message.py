@@ -41,7 +41,9 @@ def send_to_slack(message, channel):
     sc.api_call(
         "chat.postMessage",
         channel=channel,
-        text=message,
+        text=message['text'],
+        as_user='true',
+        attachments=message.get('attachments', None),
     )
 
 def setup_script_args():
