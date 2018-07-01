@@ -25,6 +25,7 @@ CHANNEL_CHOICES = {
     'evan': 'D3B1Q1YNT',
     'kevin': 'D39KFCW7J',
     'ollie': 'D3A8V5K3M',
+    'dem-boiz': 'CBGSP0UH1',
 }
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
 SLACK_NO_CHANNEL = 'none'
@@ -105,8 +106,8 @@ def main():
     if args.debug:
         pp.pprint(message)
 
-    if SLACK_TOKEN and args.channel in CHANNEL_CHOICES.keys():
-        send_to_slack(message, CHANNEL_CHOICES[args.channel])
+    if SLACK_TOKEN and args.send in CHANNEL_CHOICES.keys():
+        send_to_slack(message, CHANNEL_CHOICES[args.send])
 
 if __name__ == '__main__':
     main()
