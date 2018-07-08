@@ -26,6 +26,17 @@ source /home/kwang/lunchnaste/bin/activate
 source ~/env.sh
 ```
 
+### crontab
+
+```
+# debugging
+*/1 * * * * /home/kwang/lunchnaste/push.sh false BBIQ kwang Breakfast >> /home/kwang/logs/lunchnaste.log 2>&1
+*/1 * * * * /home/kwang/lunchnaste/push.sh false BBIQ kwang Lunch >> /home/kwang/logs/lunchnaste.log 2>&1
+
+# prod
+30 7 * * * /home/kwang/lunchnaste/push.sh false BBIQ dem-boiz Lunch >> /home/kwang/logs/lunchnaste.log 2>&1
+30 7 * * * /home/kwang/lunchnaste/push.sh false PIN seo-young Lunch >> /home/kwang/logs/lunchnaste.log 2>&1
+```
 
 ### tests
 
