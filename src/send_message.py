@@ -23,7 +23,7 @@ CHANNEL_CHOICES = {
     'eric-huang': 'D8R13MBMM',
     'eric-pham': 'DAXNA4Q5B',
     'evan': 'D3B1Q1YNT',
-    'kevin': 'D39KFCW7J',
+    'kwang': 'D39KFCW7J',
     'ollie': 'D3A8V5K3M',
     'dem-boiz': 'CBGSP0UH1',
 }
@@ -62,7 +62,7 @@ def setup_script_args():
         '--send',
         type=str,
         default=SLACK_NO_CHANNEL,
-        choices=[*CHANNEL_CHOICES.keys(), SLACK_NO_CHANNEL],
+        choices=list(CHANNEL_CHOICES.keys()) + [SLACK_NO_CHANNEL],
         help='slack message ids where you want to send the message')
 
     parser.add_argument(

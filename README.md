@@ -17,8 +17,14 @@ PYTHONPATH=. [READ=true] python src/send_message.py [--debug=false] [-s kwang]
 ```
 mkvirtualenv --python=`which python3` lunchnaste
 workon lunchnaste
-```
 
+# devapp
+scp env.sh kwang@dev-kwang.ec2.pin220.com:env.sh
+
+virtualenv --python=`which python3` lunchnaste
+source /home/kwang/lunchnaste/bin/activate
+source ~/env.sh
+```
 
 ### tests
 
@@ -31,3 +37,4 @@ workon lunchnaste
 - [ ] support sending to multiple channels/users
 - [ ] maybe: predictive modeling to decide which bullding is better
 - [ ] include other offices (for when we can afford to fly to nyc for lunch)
+
