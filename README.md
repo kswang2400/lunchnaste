@@ -26,6 +26,13 @@ source /home/kwang/lunchnaste/bin/activate
 source ~/env.sh
 ```
 
+# lambda deploy
+
+```
+source lambda_deploy.sh
+upload lunchnaste.zip to aws lambda
+```
+
 ### tests
 
 - `PYTHONPATH=src pytest`
