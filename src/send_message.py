@@ -39,6 +39,11 @@ def get_raw_html():
     else:
         return open('static/menu_page.html', 'r').read()
 
+def lambda_handler(event, context):
+    main()
+
+    return
+
 def send_to_slack(message, channel):
     sc = SlackClient(SLACK_TOKEN)
     sc.api_call(
@@ -48,6 +53,8 @@ def send_to_slack(message, channel):
         as_user='true',
         attachments=message.get('attachments', None),
     )
+
+    return
 
 def setup_script_args():
     parser = argparse.ArgumentParser()
@@ -108,6 +115,8 @@ def main():
 
     if SLACK_TOKEN and args.send in CHANNEL_CHOICES.keys():
         send_to_slack(message, CHANNEL_CHOICES[args.send])
+
+    return
 
 if __name__ == '__main__':
     main()

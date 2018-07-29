@@ -1,7 +1,7 @@
 import datetime
 from html.parser import HTMLParser
 
-from src.menu_data_helpers import (
+from menu_data_helpers import (
     MEALS,
     is_empty,
     is_gluten_free,

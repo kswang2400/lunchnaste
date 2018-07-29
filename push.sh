@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 DEBUG=$1
 CREW=$2
 RECIPIENT=$3
