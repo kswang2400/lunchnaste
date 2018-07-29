@@ -27,6 +27,7 @@ CHANNEL_CHOICES = {
     'ollie': 'D3A8V5K3M',
     'dem-boiz': 'CBGSP0UH1',
 }
+
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
 SLACK_NO_CHANNEL = 'none'
 SLACK_TOKEN = os.environ.get("SLACK_API_TOKEN", None)
@@ -40,27 +41,38 @@ def get_raw_html():
         return open('static/menu_page.html', 'r').read()
 
 def lambda_handler(event, context):
+    event_args = parse_lambda_event(event)
+
+    custom_token = os.environ.get('KW_{crew}'.format(crew=event_args['crew']))
+
     parser = MenuHTMLParser()
 
     metadata, message = parser.feed(get_raw_html())
 
-    metadata = filter_menu_in_cities(metadata, event['cities'])
-    metadata = filter_menu_during_meal(metadata, event['meal'])
+    metadata = filter_menu_in_cities(metadata, event_args['cities'])
+    metadata = filter_menu_during_meal(metadata, event_args['meal'])
     message = format_metadata_for_slack(metadata)
 
-    return message
+    response = send_to_slack(message, CHANNEL_CHOICES[event_args['recipient']], custom_token)
 
-    # send_to_slack(message, event['channel'])
+    return response
 
-    # return 'success! sent {cities} {meal} data to {channel}'.format(
-    #     cities=event['cities'],
-    #     meal=event['meal'],
-    #     channel=event['channel'],
-    # )
+def parse_lambda_event(event):
+    default_args = {
+        'cities': ['SF'],
+        'crew': 'BBIQ',
+        'recipient': 'dem-boiz',
+        'meal': 'Lunch',
+    }
 
-def send_to_slack(message, channel):
-    sc = SlackClient(SLACK_TOKEN)
-    sc.api_call(
+    event_args = event.copy()
+    event_args.update(default_args)
+
+    return event_args
+
+def send_to_slack(message, channel, slack_api_token=None):
+    sc = SlackClient(slack_api_token or SLACK_TOKEN)
+    response = sc.api_call(
         "chat.postMessage",
         channel=channel,
         text=message['text'],
@@ -68,7 +80,7 @@ def send_to_slack(message, channel):
         attachments=message.get('attachments', None),
     )
 
-    return
+    return response
 
 def setup_script_args():
     parser = argparse.ArgumentParser()
