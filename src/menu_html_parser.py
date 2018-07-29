@@ -58,6 +58,9 @@ class MenuHTMLParser(HTMLParser):
 
     def feed(self, data):
         super().feed(data)
+
+        self.data['date'] = self.date
+
         return self.data
 
     def _build_menu_metadata_key(self):
@@ -83,7 +86,7 @@ class MenuHTMLParser(HTMLParser):
             'meal': self.meal,
             'theme': self.theme,
             'is_gluten_free': is_gluten_free(data),
-            'data': self.date,
+            'date': self.date,
         }
 
     def _parse_and_set_header_metadata(self, data):
