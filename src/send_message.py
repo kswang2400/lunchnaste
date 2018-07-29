@@ -40,9 +40,23 @@ def get_raw_html():
         return open('static/menu_page.html', 'r').read()
 
 def lambda_handler(event, context):
-    main()
+    parser = MenuHTMLParser()
 
-    return
+    metadata, message = parser.feed(get_raw_html())
+
+    metadata = filter_menu_in_cities(metadata, event['cities'])
+    metadata = filter_menu_during_meal(metadata, event['meal'])
+    message = format_metadata_for_slack(metadata)
+
+    return message
+
+    # send_to_slack(message, event['channel'])
+
+    # return 'success! sent {cities} {meal} data to {channel}'.format(
+    #     cities=event['cities'],
+    #     meal=event['meal'],
+    #     channel=event['channel'],
+    # )
 
 def send_to_slack(message, channel):
     sc = SlackClient(SLACK_TOKEN)
