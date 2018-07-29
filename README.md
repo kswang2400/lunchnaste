@@ -28,7 +28,7 @@ source ~/env.sh
 
 ### tests
 
-- `PYTHONPATH=. pytest`
+- `PYTHONPATH=src pytest`
 
 ### roadmap
 
