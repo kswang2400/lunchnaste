@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import pprint
 from slackclient import SlackClient
@@ -55,13 +56,16 @@ def lambda_handler(event, context):
 
     response = send_to_slack(message, CHANNEL_CHOICES[event_args['recipient']], custom_token)
 
-    return response
+    return {
+        'statusCode': 200,
+        'body': json.dumps(response),
+    }
 
 def parse_lambda_event(event):
     default_args = {
         'cities': ['SF'],
-        'crew': 'BBIQ',
-        'recipient': 'dem-boiz',
+        'crew': 'PIN',
+        'recipient': 'seo-young',
         'meal': 'Lunch',
     }
 
