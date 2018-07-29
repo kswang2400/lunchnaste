@@ -41,38 +41,16 @@ def get_raw_html():
     else:
         return open('static/menu_page.html', 'r').read()
 
-def lambda_handler(event, context):
-    event_args = parse_lambda_event(event)
-
-    custom_token = os.environ.get('KW_{crew}'.format(crew=event_args['crew']))
-
+def read_from_blog(cities, meal):
     parser = MenuHTMLParser()
 
-    metadata, message = parser.feed(get_raw_html())
+    metadata = parser.feed(get_raw_html())
+    metadata = filter_menu_in_cities(metadata, cities)
+    metadata = filter_menu_during_meal(metadata, meal)
 
-    metadata = filter_menu_in_cities(metadata, event_args['cities'])
-    metadata = filter_menu_during_meal(metadata, event_args['meal'])
     message = format_metadata_for_slack(metadata)
 
-    response = send_to_slack(message, CHANNEL_CHOICES[event_args['recipient']], custom_token)
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps(response),
-    }
-
-def parse_lambda_event(event):
-    default_args = {
-        'cities': ['SF'],
-        'crew': 'PIN',
-        'recipient': 'seo-young',
-        'meal': 'Lunch',
-    }
-
-    event_args = event.copy()
-    event_args.update(default_args)
-
-    return event_args
+    return message
 
 def send_to_slack(message, channel, slack_api_token=None):
     sc = SlackClient(slack_api_token or SLACK_TOKEN)
@@ -130,15 +108,7 @@ def string_boolean(v):
 
 def main():
     args = setup_script_args()
-
-    parser = MenuHTMLParser()
-    raw_html = get_raw_html()
-
-    metadata, message = parser.feed(raw_html)
-
-    metadata = filter_menu_in_cities(metadata, args.cities)
-    metadata = filter_menu_during_meal(metadata, args.meal)
-    message = format_metadata_for_slack(metadata)
+    message = read_from_blog(args.cities, args.meal)
 
     if args.debug:
         pp.pprint(message)

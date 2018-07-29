@@ -1,5 +1,6 @@
 #!/bin/bash
 
+make clean
 mkdir lunchnaste-lambda
 chmod +x lunchnaste-lambda
 if [ ! -f lunchnaste.zip ]; then

@@ -59,7 +59,7 @@ class MenuHTMLParser(HTMLParser):
 
     def feed(self, data):
         super().feed(data)
-        return (self.data, self.output)
+        return self.data
 
     def _append_to_output_string(self, data):
         warning = '' if is_gluten_free(data) else ':warning: '
