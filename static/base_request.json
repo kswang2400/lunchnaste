@@ -1,0 +1,57 @@
+{
+    "resource": "/lunchnaste",
+    "path": "/lunchnaste",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "application/json,*/*",
+        "Accept-Encoding": "gzip,deflate",
+        "Host": "ntw5tljxxi.execute-api.us-west-2.amazonaws.com",
+        "User-Agent": "Slackbot 1.0 (+https://api.slack.com/robots)",
+        "X-Amzn-Trace-Id": "Root=1-5b5df9c7-de73c1219c1ffac728b3c57e",
+        "X-Forwarded-For": "52.91.127.96",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "queryStringParameters": {
+        "channel_name": "directmessage",
+        "user_id": "U74FSCRSM",
+        "user_name": "kwang",
+        "team_domain": "pinterest",
+        "team_id": "T024LJUGB",
+        "text": "",
+        "channel_id": "D751KUUUA",
+        "command": "/menu",
+        "response_url": "https://hooks.slack.com/commands/T024LJUGB/406241395888/5XMchfma21pIb5rwyThZGGJQ",
+        "token": "sovja6STRtCPFBXmLHZoyUmn"
+    },
+    "pathParameters": "None",
+    "stageVariables": "None",
+    "requestContext": {
+        "resourceId": "dqky55",
+        "resourcePath": "/lunchnaste",
+        "httpMethod": "GET",
+        "extendedRequestId": "KzP3OHjgPHcFmaA=",
+        "requestTime": "29/Jul/2018:17:30:47 +0000",
+        "path": "/default/lunchnaste",
+        "accountId": "400879833341",
+        "protocol": "HTTP/1.1",
+        "stage": "default",
+        "requestTimeEpoch": 1532885447856, "requestId": "21835b70-9355-11e8-babc-c31bc3bfddcf",
+        "identity": {
+            "cognitoIdentityPoolId": "None",
+            "accountId": "None",
+            "cognitoIdentityId": "None",
+            "caller": "None",
+            "sourceIp": "52.91.127.96",
+            "accessKey": "None",
+            "cognitoAuthenticationType": "None",
+            "cognitoAuthenticationProvider": "None",
+            "userArn": "None",
+            "userAgent": "Slackbot 1.0 (+https://api.slack.com/robots)",
+            "user": "None"
+        },
+        "apiId": "ntw5tljxxi"
+    },
+    "body": "None",
+    "isBase64Encoded": "False"
+}

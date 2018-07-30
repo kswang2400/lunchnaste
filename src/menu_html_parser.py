@@ -1,7 +1,7 @@
 import datetime
 from html.parser import HTMLParser
 
-from src.menu_data_helpers import (
+from menu_data_helpers import (
     MEALS,
     is_empty,
     is_gluten_free,
@@ -17,7 +17,6 @@ DATE_FORMAT = '%m/%d/%Y'
 class MenuHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.output = ''
         self.menu_section = 0
         self.data = {}
         self.date = False
@@ -53,28 +52,16 @@ class MenuHTMLParser(HTMLParser):
             return
 
         if self.menu_section == 1:
-            self._collect_data(data)
+            self._collect_metadata(data)
 
         return
 
     def feed(self, data):
         super().feed(data)
-        return (self.data, self.output)
 
-    def _append_to_output_string(self, data):
-        warning = '' if is_gluten_free(data) else ':warning: '
-        spacing = {
-            'city': '\n',
-            'meals': '\t',
-            'menu_item': '\t\t',
-        }[menu_section_name(data)]
+        self.data['date'] = self.date
 
-        self.output += '{spacing}{warning}{data}\n'.format(
-            spacing=spacing,
-            warning=warning,
-            data=data)
-
-        return
+        return self.data
 
     def _build_menu_metadata_key(self):
         key = (self.date.strftime(DATE_FORMAT), self.building, self.meal)
@@ -82,12 +69,6 @@ class MenuHTMLParser(HTMLParser):
             self.data[key] = []
 
         return key
-
-    def _collect_data(self, data):
-        self._collect_metadata(data)
-        self._append_to_output_string(data)
-
-        return
 
     def _collect_metadata(self, data):
         is_header = self._parse_and_set_header_metadata(data)
@@ -105,7 +86,7 @@ class MenuHTMLParser(HTMLParser):
             'meal': self.meal,
             'theme': self.theme,
             'is_gluten_free': is_gluten_free(data),
-            'data': self.date,
+            'date': self.date,
         }
 
     def _parse_and_set_header_metadata(self, data):

@@ -26,15 +26,22 @@ source /home/kwang/lunchnaste/bin/activate
 source ~/env.sh
 ```
 
+# lambda deploy
+
+```
+source lambda_deploy.sh
+upload lunchnaste.zip to aws lambda
+```
+
 ### tests
 
-- `PYTHONPATH=. pytest`
+- `PYTHONPATH=src pytest`
 
 ### roadmap
 
 - [x] parse menu data from pincuisine blog
+- [x] slack slash command integration
 - [ ] set up voting bot to figure out which building to crew up
 - [ ] support sending to multiple channels/users
-- [ ] maybe: predictive modeling to decide which bullding is better
-- [ ] include other offices (for when we can afford to fly to nyc for lunch)
+- [x] include other offices (for when we can afford to fly to nyc for lunch)
 

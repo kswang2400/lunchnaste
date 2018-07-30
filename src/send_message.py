@@ -27,6 +27,7 @@ CHANNEL_CHOICES = {
     'ollie': 'D3A8V5K3M',
     'dem-boiz': 'CBGSP0UH1',
 }
+
 PIN_CHEFS_URL = 'https://www.thepinchefs.com/menu'
 SLACK_NO_CHANNEL = 'none'
 SLACK_TOKEN = os.environ.get("SLACK_API_TOKEN", None)
@@ -39,15 +40,28 @@ def get_raw_html():
     else:
         return open('static/menu_page.html', 'r').read()
 
-def send_to_slack(message, channel):
-    sc = SlackClient(SLACK_TOKEN)
-    sc.api_call(
+def read_from_blog(cities, meal):
+    parser = MenuHTMLParser()
+
+    metadata = parser.feed(get_raw_html())
+    metadata = filter_menu_in_cities(metadata, cities)
+    metadata = filter_menu_during_meal(metadata, meal)
+
+    message = format_metadata_for_slack(metadata)
+
+    return message
+
+def send_to_slack(message, channel, slack_api_token=None):
+    sc = SlackClient(slack_api_token or SLACK_TOKEN)
+    response = sc.api_call(
         "chat.postMessage",
         channel=channel,
         text=message['text'],
         as_user='true',
         attachments=message.get('attachments', None),
     )
+
+    return response
 
 def setup_script_args():
     parser = argparse.ArgumentParser()
@@ -93,21 +107,15 @@ def string_boolean(v):
 
 def main():
     args = setup_script_args()
-
-    parser = MenuHTMLParser()
-    raw_html = get_raw_html()
-
-    metadata, message = parser.feed(raw_html)
-
-    metadata = filter_menu_in_cities(metadata, args.cities)
-    metadata = filter_menu_during_meal(metadata, args.meal)
-    message = format_metadata_for_slack(metadata)
+    message = read_from_blog(args.cities, args.meal)
 
     if args.debug:
         pp.pprint(message)
 
     if SLACK_TOKEN and args.send in CHANNEL_CHOICES.keys():
         send_to_slack(message, CHANNEL_CHOICES[args.send])
+
+    return
 
 if __name__ == '__main__':
     main()

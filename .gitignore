@@ -1,5 +1,8 @@
 env.sh
+lunchnaste.zip
 *.pyc
 
 __pycache__
+
+lunchnaste-lambda/
 .pytest_cache/*
